@@ -3,78 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Beijing Toilet Finder</title>
+    <title>China Toilet Finder</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#51A1B4">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BJ Toilet Finder">
+    <meta name="apple-mobile-web-app-title" content="CN Toilet Finder">
     <link rel="apple-touch-icon" href="icon.png">
 
     <script type="text/javascript">
         window._AMapSecurityConfig = { securityJsCode: '5ffadc3176970e5963d9961ada9fc1e3' };
     </script>
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=27cb9ef31045cd08c4eae5263589ccc4&plugin=AMap.PlaceSearch,AMap.Geolocation,AMap.Walking"></script>
-    
+
     <style>
-        /* 全局变量调整 */
-        :root { 
-            --p: #51A1B4; 
-            /* 关键修改：透明度从 0.9 降至 0.6，大幅增强透光感 */
-            --g: rgba(255, 255, 255, 0.60); 
-            --s: 0 4px 16px rgba(0,0,0,0.12); 
-        }
+        :root { --p: #51A1B4; --g: rgba(255,255,255,0.60); --s: 0 4px 16px rgba(0,0,0,0.12); }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #fff; }
-        
-        /* 强制地图容器物理尺寸 */
         #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100% !important; height: 100% !important; z-index: 1; display: block; }
-
-        /* 顶部栏 */
-        .top-bar {
-            position: absolute; top: env(safe-area-inset-top, 12px); left: 50%; transform: translateX(-50%);
-            width: 88%; max-width: 380px; 
-            /* 磨砂效果 */
-            background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            padding: 8px 16px; border-radius: 24px; box-shadow: var(--s); z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .top-bar { position: absolute; top: env(safe-area-inset-top, 12px); left: 50%; transform: translateX(-50%); width: 88%; max-width: 380px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 24px; box-shadow: var(--s); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
         .lang-info { font-size: 13px; font-weight: 700; color: #1d1d1f; }
-        /* 下拉框也跟随变得更透明 */
-        select { border: none; background: rgba(255, 255, 255, 0.4); padding: 6px 12px; border-radius: 12px; font-size: 12px; color: var(--p); font-weight: 600; outline: none; }
-
-        /* 底部操作按钮 */
-        .btn-ui {
-            position: absolute; bottom: calc(env(safe-area-inset-bottom, 20px) + 10px);
-            width: 54px; height: 54px; 
-            background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            box-shadow: var(--s); z-index: 100; cursor: pointer;
-        }
+        select { border: none; background: rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 12px; font-size: 12px; color: var(--p); font-weight: 600; outline: none; }
+        .btn-ui { position: absolute; bottom: calc(env(safe-area-inset-bottom,20px)+10px); width: 54px; height: 54px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--s); z-index: 100; cursor: pointer; }
         .btn-refresh { left: 20px; }
         .btn-re { right: 20px; }
-
-        /* 大号半透明引导气泡 */
-        .install-toast {
-            position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%);
-            width: 75%; max-width: 400px; padding: 25px 20px; 
-            
-            /* 气泡保持较深背景以保证文字可读性，但也增加了磨砂感 */
-            background: rgba(0, 0, 0, 0.60); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            
-            display: flex; justify-content: center; align-items: center;
-            color: #fff; text-align: center;
-            border-radius: 50px; font-size: 15px; font-weight: 600;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 200;
-            opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
-        }
+        .install-toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); width: 75%; max-width: 400px; padding: 25px 20px; background: rgba(0,0,0,0.60); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; color: #fff; text-align: center; border-radius: 50px; font-size: 15px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
         .install-toast.show { opacity: 1; }
-
         .pop { min-width: 170px; padding: 4px 0; }
         .stats { font-size: 13px; color: var(--p); font-weight: 700; margin: 4px 0 8px; }
         .ext-btn { display: block; padding: 10px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 12px; font-weight: 700; text-align: center; margin-bottom: 6px; }
-        
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
         .wc-marker { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); cursor: pointer; }
     </style>
@@ -105,13 +62,12 @@
 <div id="map"></div>
 
 <script>
-    // 更新了 Toast 提示语 (P字段)
     const i18n = {
-        en:{n:"English",t:"Toilet",g:"Open App", p:"Add to Home Screen for easy access 📱"}, 
+        en:{n:"English",t:"Toilet",g:"Open App", p:"Add to Home Screen for easy access 📱"},
         ko:{n:"한국어",t:"화장실",g:"앱 열기", p:"나중에 사용하기 쉽도록 홈 화면에 추가하세요 📱"},
-        ja:{n:"日本語",t:"トイレ",g:"アプリ", p:"便利な使い方：ホーム画面に追加 📱"}, 
+        ja:{n:"日本語",t:"トイレ",g:"アプリ", p:"便利な使い方：ホーム画面に追加 📱"},
         zh:{n:"中文",t:"厕所",g:"打开应用", p:"请将书签添加到桌面方便后续使用 📱"},
-        es:{n:"Español",t:"Baño",g:"Abrir", p:"Añadir a pantalla de inicio para acceso fácil 📱"}, 
+        es:{n:"Español",t:"Baño",g:"Abrir", p:"Añadir a pantalla de inicio para acceso fácil 📱"},
         fr:{n:"Français",t:"Toilettes",g:"Ouvrir", p:"Ajouter à l'écran d'accueil pour un accès facile 📱"}
     };
 
@@ -124,29 +80,23 @@
                 <circle cx="17" cy="17" r="11" fill="white"/>
                 <text x="17" y="21" font-family="Arial" font-size="9" font-weight="bold" fill="#51A1B4" text-anchor="middle">WC</text>
             </svg>
-        </div>
-    `;
+        </div>`;
 
-    // 智能引导检测逻辑
     const checkInstallPrompt = () => {
         if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) return;
-        const lastPrompt = localStorage.getItem('bj_install_prompt_time');
+        const lastPrompt = localStorage.getItem('cn_install_prompt_time');
         const now = Date.now();
-        const interval = 90 * 24 * 60 * 60 * 1000; 
+        const interval = 90 * 24 * 60 * 60 * 1000;
         if (!lastPrompt || (now - lastPrompt > interval)) {
             const tip = document.getElementById('iTip');
-            // 自动检测是否为中文环境，如果是则直接显示中文，否则显示当前语言
-            // 这里我们简化逻辑，跟随右上角语言选择，或者默认尝试匹配中文
             if (curL === 'en' && navigator.language.startsWith('zh')) {
-                 // 默认情况如果系统是中文，使用中文提示
-                 tip.innerText = i18n['zh'].p;
+                tip.innerText = i18n['zh'].p;
             } else {
-                 tip.innerText = i18n[curL] ? i18n[curL].p : i18n['zh'].p;
+                tip.innerText = i18n[curL] ? i18n[curL].p : i18n['zh'].p;
             }
-
             setTimeout(() => {
                 tip.classList.add('show');
-                localStorage.setItem('bj_install_prompt_time', now);
+                localStorage.setItem('cn_install_prompt_time', now);
                 setTimeout(() => { tip.classList.remove('show'); }, 5000);
             }, 1000);
         }
@@ -154,7 +104,7 @@
 
     const initMap = () => {
         try {
-            map = new AMap.Map('map', { zoom: 15, center: [116.397, 39.909], viewMode: '2D' });
+            map = new AMap.Map('map', { zoom: 5, center: [104.0, 35.0], viewMode: '2D' });
             map.on('complete', () => {
                 checkInstallPrompt();
                 ps = new AMap.PlaceSearch({ type: '公共厕所', pageSize: 40 });

@@ -1,7 +1,7 @@
 {
-  "short_name": "BJ Toilet Finder",
-  "name": "Beijing Toilet Finder",
-  "description": "Find public toilets in Beijing with real-time navigation and walking routes.",
+  "short_name": "CN Toilet Finder",
+  "name": "China Toilet Finder",
+  "description": "Find public toilets across China with real-time navigation and walking routes.",
   "icons": [
     {
       "src": "icon.png",
