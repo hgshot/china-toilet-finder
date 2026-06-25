@@ -23,7 +23,6 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #fff; }
         #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100% !important; height: 100% !important; z-index: 1; display: block; }
         .top-bar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 88%; max-width: 380px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 24px; box-shadow: var(--s); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
-        .lang-info { font-size: 13px; font-weight: 700; color: #1d1d1f; }
         select { border: none; background: rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 12px; font-size: 12px; color: var(--p); font-weight: 600; outline: none; }
         .btn-ui { position: absolute; bottom: 30px; width: 54px; height: 54px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--s); z-index: 100; cursor: pointer; }
         .btn-refresh { left: 20px; }
@@ -41,14 +40,13 @@
 <body>
 
 <div class="top-bar">
-    <div class="lang-info" id="curL">English</div>
     <select id="lS">
-        <option value="en">Change</option>
-        <option value="ko">변경</option>
-        <option value="ja">変更</option>
-        <option value="zh">更改</option>
-        <option value="es">Cambiar</option>
-        <option value="fr">Changer</option>
+        <option value="en">English</option>
+        <option value="ko">한국어</option>
+        <option value="ja">日本語</option>
+        <option value="zh">中文</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
     </select>
 </div>
 
@@ -157,7 +155,7 @@
         });
     };
 
-    document.getElementById('lS').onchange = e => { curL = e.target.value; document.getElementById('curL').innerText = i18n[curL].n; search(); };
+    document.getElementById('lS').onchange = e => { curL = e.target.value; search(); };
     document.getElementById('re').onclick = () => { if(geo) geo.getCurrentPosition((s, r) => { if(s==='complete') { map.setCenter(r.position); search(); } }); };
 
 
