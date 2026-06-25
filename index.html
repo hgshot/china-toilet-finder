@@ -43,12 +43,12 @@
 <div class="top-bar">
     <div class="lang-info" id="curL">English</div>
     <select id="lS">
-        <option value="en">English</option>
-        <option value="ko">한국어</option>
-        <option value="ja">日本語</option>
-        <option value="zh">中文</option>
-        <option value="es">Español</option>
-        <option value="fr">Français</option>
+        <option value="en">Change</option>
+        <option value="ko">변경</option>
+        <option value="ja">変更</option>
+        <option value="zh">更改</option>
+        <option value="es">Cambiar</option>
+        <option value="fr">Changer</option>
     </select>
 </div>
 
@@ -66,12 +66,12 @@
 
 <script>
     const i18n = {
-        en:{n:"English",t:"Toilet",g:"Open App", p:"Add to Home Screen for easy access 📱"},
-        ko:{n:"한국어",t:"화장실",g:"앱 열기", p:"나중에 사용하기 쉽도록 홈 화면에 추가하세요 📱"},
-        ja:{n:"日本語",t:"トイレ",g:"アプリ", p:"便利な使い方：ホーム画面に追加 📱"},
-        zh:{n:"中文",t:"厕所",g:"打开应用", p:"请将书签添加到桌面方便后续使用 📱"},
-        es:{n:"Español",t:"Baño",g:"Abrir", p:"Añadir a pantalla de inicio para acceso fácil 📱"},
-        fr:{n:"Français",t:"Toilettes",g:"Ouvrir", p:"Ajouter à l'écran d'accueil pour un accès facile 📱"}
+        en:{n:"English",c:"Change",t:"Toilet",g:"Open App", p:"Add to Home Screen for easy access 📱"},
+        ko:{n:"한국어",c:"변경",t:"화장실",g:"앱 열기", p:"나중에 사용하기 쉽도록 홈 화면에 추가하세요 📱"},
+        ja:{n:"日本語",c:"変更",t:"トイレ",g:"アプリ", p:"便利な使い方：ホーム画面に追加 📱"},
+        zh:{n:"中文",c:"更改",t:"厕所",g:"打开应用", p:"请将书签添加到桌面方便后续使用 📱"},
+        es:{n:"Español",c:"Cambiar",t:"Baño",g:"Abrir", p:"Añadir a pantalla de inicio para acceso fácil 📱"},
+        fr:{n:"Français",c:"Changer",t:"Toilettes",g:"Ouvrir", p:"Ajouter à l'écran d'accueil pour un accès facile 📱"}
     };
 
     let curL='en', map, ps, geo, walker, userPos=null, userM, routeL, timer;
