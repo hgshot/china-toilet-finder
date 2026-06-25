@@ -101,8 +101,7 @@
     const initMap = () => {
         try {
             map = L.map('map', { zoom: 5, center: [35, 104], attributionControl: false, zoomControl: false });
-            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
-            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
 
             document.getElementById('loader').style.display = 'none';
             document.getElementById('map').classList.add('loaded');
