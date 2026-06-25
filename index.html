@@ -65,7 +65,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const TDK = 'f96b13eff09cdbd2112b9baee8298fbc';
+    const TDK = 'f96b13eff09cdbd2112b9baee8298fbc,812c80f9c6fbcf9d0bd5c4b6b956ad33';
     const AMK = '27cb9ef31045cd08c4eae5263589ccc4';
 
     const i18n = {
@@ -101,7 +101,8 @@
     const initMap = () => {
         try {
             map = L.map('map', { zoom: 5, center: [35, 104], attributionControl: false, zoomControl: false });
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
+            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
+            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
 
             document.getElementById('loader').style.display = 'none';
             document.getElementById('map').classList.add('loaded');
