@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>China Toilet Finder</title>
-    <meta name="description" content="Find public toilets across China with walking routes. Built with Amap.">
+    <meta name="description" content="Find public toilets across China with walking routes.">
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#51A1B4">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,24 +14,19 @@
     <meta name="apple-mobile-web-app-title" content="CN Toilet Finder">
     <link rel="apple-touch-icon" href="icon.png">
 
-    <script type="text/javascript">
-        window._AMapSecurityConfig = { securityJsCode: '5ffadc3176970e5963d9961ada9fc1e3' };
-    </script>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=27cb9ef31045cd08c4eae5263589ccc4&plugin=AMap.PlaceSearch,AMap.Geolocation,AMap.Walking"></script>
-
     <style>
         :root { --p: #51A1B4; --g: rgba(255,255,255,0.60); --s: 0 4px 16px rgba(0,0,0,0.12); }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: -apple-system, sans-serif; background: #fff; }
         #loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); color: #bbb; font-size: 13px; z-index: 0; }
         #map { position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100% !important; height: 100% !important; z-index: 1; display: block; opacity: 0; transition: opacity 0.4s; }
         #map.loaded { opacity: 1; }
-        .top-bar { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 88%; max-width: 380px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 24px; box-shadow: var(--s); z-index: 100; display: flex; justify-content: flex-end; align-items: center; }
+        .top-bar { position: absolute; top: env(safe-area-inset-top, 20px); left: 50%; transform: translateX(-50%); width: 88%; max-width: 380px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 24px; box-shadow: var(--s); z-index: 1000; display: flex; justify-content: flex-end; align-items: center; }
         select { border: none; background: rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 12px; font-size: 12px; color: var(--p); font-weight: 600; outline: none; }
         select.searching { animation: glow 0.6s ease-in-out; }
-        .btn-ui { position: absolute; bottom: 30px; width: 54px; height: 54px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--s); z-index: 100; cursor: pointer; }
+        .btn-ui { position: absolute; bottom: 30px; width: 54px; height: 54px; background: var(--g); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--s); z-index: 1000; cursor: pointer; }
         .btn-refresh { left: 20px; }
         .btn-re { right: 20px; }
-        .install-toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); width: 75%; max-width: 400px; padding: 25px 20px; background: rgba(0,0,0,0.60); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; color: #fff; text-align: center; border-radius: 50px; font-size: 15px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
+        .install-toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); width: 75%; max-width: 400px; padding: 25px 20px; background: rgba(0,0,0,0.60); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); display: flex; justify-content: center; align-items: center; color: #fff; text-align: center; border-radius: 50px; font-size: 15px; font-weight: 600; box-shadow: 0 10px 40px rgba(0,0,0,0.25); z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.6s ease; }
         .install-toast.show { opacity: 1; animation: pulse 2s ease-in-out infinite; }
         .pop { min-width: 170px; padding: 4px 0; }
         .stats { font-size: 13px; color: var(--p); font-weight: 700; margin: 4px 0 8px; }
@@ -54,7 +50,7 @@
     </select>
 </div>
 
-<div id="iTip" class="install-toast">Add to Home Screen for easy access 📱</div>
+<div id="iTip" class="install-toast">Add to Home Screen for easy access</div>
 
 <div class="btn-ui btn-refresh" id="rf">
     <svg viewBox="0 0 24 24" width="26" height="26" fill="#FF3B30"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-8 3.58-8 8s3.58 8 8 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
@@ -67,115 +63,129 @@
 <div id="loader">Loading map...</div>
 <div id="map"></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+    const TDK = 'f96b13eff09cdbd2112b9baee8298fbc';
+    const AMK = '27cb9ef31045cd08c4eae5263589ccc4';
+
     const i18n = {
-        en:{n:"English",c:"Change",t:"Toilet",g:"Open App", p:"Add to Home Screen for easy access 📱"},
-        ko:{n:"한국어",c:"변경",t:"화장실",g:"앱 열기", p:"나중에 사용하기 쉽도록 홈 화면에 추가하세요 📱"},
-        ja:{n:"日本語",c:"変更",t:"トイレ",g:"アプリ", p:"便利な使い方：ホーム画面に追加 📱"},
-        zh:{n:"中文",c:"更改",t:"厕所",g:"打开应用", p:"请将书签添加到桌面方便后续使用 📱"},
-        es:{n:"Español",c:"Cambiar",t:"Baño",g:"Abrir", p:"Añadir a pantalla de inicio para acceso fácil 📱"},
-        fr:{n:"Français",c:"Changer",t:"Toilettes",g:"Ouvrir", p:"Ajouter à l'écran d'accueil pour un accès facile 📱"}
+        en:{n:"English",c:"Change",t:"Toilet",g:"Open App"},
+        ko:{n:"한국어",c:"변경",t:"화장실",g:"앱 열기"},
+        ja:{n:"日本語",c:"変更",t:"トイレ",g:"アプリ"},
+        zh:{n:"中文",c:"更改",t:"厕所",g:"打开应用"},
+        es:{n:"Español",c:"Cambiar",t:"Baño",g:"Abrir"},
+        fr:{n:"Français",c:"Changer",t:"Toilettes",g:"Ouvrir"}
     };
 
-    let curL='en', map, ps, geo, walker, userPos=null, userM, routeL, timer;
+    let curL='en', map, userPos=null, userM, routeL, timer;
 
-    const wcIconContent = `
-        <div class="wc-marker">
-            <svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17 0C7.61116 0 0 7.61116 0 17C0 27.2 17 42 17 42C17 42 34 27.2 34 17C34 7.61116 26.3888 0 17 0Z" fill="#51A1B4"/>
-                <circle cx="17" cy="17" r="11" fill="white"/>
-                <text x="17" y="21" font-family="Arial" font-size="9" font-weight="bold" fill="#51A1B4" text-anchor="middle">WC</text>
-            </svg>
-        </div>`;
+    const wcIcon = '<div class="wc-marker"><svg width="34" height="42" viewBox="0 0 34 42" fill="none"><path d="M17 0C7.61116 0 0 7.61116 0 17C0 27.2 17 42 17 42C17 42 34 27.2 34 17C34 7.61116 26.3888 0 17 0Z" fill="#51A1B4"/><circle cx="17" cy="17" r="11" fill="white"/><text x="17" y="21" font-family="Arial" font-size="9" font-weight="bold" fill="#51A1B4" text-anchor="middle">WC</text></svg></div>';
+    const userSvg = '<svg viewBox="0 0 496 512" width="40" height="40" fill="#F4A000" stroke="white" stroke-width="15"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg>';
 
     const checkInstallPrompt = () => {
-        if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) return;
-        const lastPrompt = localStorage.getItem('cn_install_prompt_time');
+        if (window.matchMedia('(display-mode: standalone)').matches) return;
+        const last = localStorage.getItem('cn_install_time');
         const now = Date.now();
-        const interval = 30 * 24 * 60 * 60 * 1000;
-        if (!lastPrompt || (now - lastPrompt > interval)) {
+        if (!last || now - last > 30*86400000) {
             const tip = document.getElementById('iTip');
-            if (curL === 'en' && navigator.language.startsWith('zh')) {
-                tip.innerText = i18n['zh'].p;
-            } else {
-                tip.innerText = i18n[curL] ? i18n[curL].p : i18n['zh'].p;
-            }
+            if (curL === 'en' && navigator.language.startsWith('zh')) tip.innerText = i18n.zh.p || '请添加到主屏幕';
+            else tip.innerText = (i18n[curL] && i18n[curL].p) ? i18n[curL].p : 'Tap share → Add to Home Screen';
             setTimeout(() => {
                 tip.classList.add('show');
-                localStorage.setItem('cn_install_prompt_time', now);
-                setTimeout(() => { tip.classList.remove("show"); }, 5000);
-            }, 1000);
+                localStorage.setItem('cn_install_time', now);
+                setTimeout(() => tip.classList.remove('show'), 5000);
+            }, 1500);
         }
     };
 
     const initMap = () => {
         try {
-            map = new AMap.Map('map', { zoom: 5, center: [104.0, 35.0], viewMode: '2D' });
-            map.on('complete', () => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('map').classList.add('loaded');
-                checkInstallPrompt();
-                ps = new AMap.PlaceSearch({ type: '公共厕所', pageSize: 40 });
-                walker = new AMap.Walking();
-                geo = new AMap.Geolocation({ enableHighAccuracy: true, timeout: 10000 });
-                geo.getCurrentPosition((s, r) => {
-                    if(s==='complete') {
-                        userPos = r.position;
-                        updateUM(r.position);
-                        map.setZoomAndCenter(16, r.position);
-                    } else {
-                        map.setZoom(12);
-                    }
-                    search();
-                });
-            });
+            map = L.map('map', { zoom: 5, center: [35, 104], attributionControl: false, zoomControl: false });
+            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
+            L.tileLayer('https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk='+TDK, { subdomains:'01234567', maxZoom:18 }).addTo(map);
+
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('map').classList.add('loaded');
+            checkInstallPrompt();
+
+            navigator.geolocation.getCurrentPosition(pos => {
+                userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                updateUM(userPos);
+                map.setView(userPos, 16);
+                search();
+            }, () => { map.setZoom(12); search(); }, { enableHighAccuracy: true, timeout: 10000 });
+
             map.on('moveend', () => {
                 clearTimeout(timer);
                 document.getElementById('lS').classList.add('searching');
-                timer = setTimeout(() => {
-                    search();
-                    document.getElementById('lS').classList.remove('searching');
-                }, 200);
+                timer = setTimeout(() => { search(); document.getElementById('lS').classList.remove('searching'); }, 200);
             });
+            map.on('click', () => { if(routeL) { map.removeLayer(routeL); routeL = null; } });
         } catch (e) { console.error(e); }
     };
 
     const updateUM = (pos) => {
-        const svgUser = `<svg viewBox="0 0 496 512" width="40" height="40" fill="#F4A000" stroke="white" stroke-width="15"><path d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 96c48.6 0 88 39.4 88 88s-39.4 88-88 88-88-39.4-88-88 39.4-88 88-88zm0 344c-58.7 0-111.3-26.6-146.5-68.2 18.8-35.4 55.6-59.8 98.5-59.8 2.4 0 4.8.4 7.1 1.1 13 4.2 26.6 6.9 40.9 6.9 14.3 0 28-2.7 40.9-6.9 2.3-.7 4.7-1.1 7.1-1.1 42.9 0 79.7 24.4 98.5 59.8C359.3 421.4 306.7 448 248 448z"/></svg>`;
-        if (userM) userM.setPosition(pos);
-        else userM = new AMap.Marker({ position: pos, content: `<div style="animation: bounce 2s infinite;">${svgUser}</div>`, offset: new AMap.Pixel(-20, -40), map: map });
+        if (userM) userM.setLatLng(pos);
+        else userM = L.marker(pos, { icon: L.divIcon({ html:'<div style="animation:bounce 2s infinite">'+userSvg+'</div>', className:'', iconSize:[40,40], iconAnchor:[20,40] }) }).addTo(map);
     };
 
     const search = () => {
-        if(!ps || !map) return;
-        ps.searchNearBy('', map.getCenter(), 1500, (s, r) => {
-            map.getAllOverlays('marker').forEach(m => { if(m !== userM) map.remove(m); });
-            if(s==='complete' && r.poiList) {
-                r.poiList.pois.forEach(p => {
-                    const m = new AMap.Marker({ position: p.location, content: wcIconContent, offset: new AMap.Pixel(-17, -42), map: map });
-                    m.on('click', () => {
-                        if(routeL) map.remove(routeL);
-                        if(userPos) walker.search(userPos, p.location, (status, res) => {
-                            let t="...", d="...";
-                            if(status==='complete') {
-                                routeL = new AMap.Polyline({ path: res.routes[0].steps.flatMap(s => s.path), strokeColor: "#007AFF", strokeOpacity: 0.8, strokeWeight: 6, map: map });
-                                t = Math.round(res.routes[0].time/60) + " min";
-                                d = res.routes[0].distance + " m";
-                            }
-                            const content = `<div class="pop"><h4>${p.name}</h4><div class="stats">${t} • ${d}</div><details><summary>${i18n[curL].g}</summary><a href="http://maps.apple.com/?daddr=${p.location.lat},${p.location.lng}&dirflg=w" class="ext-btn" style="background:#000">Apple Maps</a><a href="https://www.google.com/maps/dir/?api=1&destination=${p.location.lat},${p.location.lng}&travelmode=walking" class="ext-btn" style="background:#34A853">Google Maps</a></details></div>`;
-                            new AMap.InfoWindow({ content, offset: new AMap.Pixel(0, -35) }).open(map, p.location);
-                        });
-                    });
-                });
+        if(!map) return;
+        const c = map.getCenter();
+        queryOSM(c.lat, c.lng).then(r => {
+            if(r.length > 0) show(r);
+            else queryAmap(c.lat, c.lng).then(show);
+        }).catch(() => queryAmap(c.lat, c.lng).then(show));
+    };
+
+    const queryOSM = (lat, lng) => fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST', body: '[out:json][timeout:3];node[amenity=toilets](around:1500,'+lat+','+lng+');out body;'
+    }).then(r => r.json()).then(d => d.elements.map(e => ({
+        name: (e.tags['name:zh'] || e.tags.name || i18n[curL].t), lat: e.lat, lng: e.lon
+    })));
+
+    const queryAmap = (lat, lng) => fetch('https://restapi.amap.com/v3/place/around?key='+AMK+'&location='+lng+','+lat+'&radius=1500&keywords=%E5%85%AC%E5%85%B1%E5%8E%95%E6%89%80&offset=40&output=json')
+        .then(r => r.json()).then(d => d.status === '1' ? d.pois.map(p => ({
+            name: p.name, lat: +p.location.split(',')[1], lng: +p.location.split(',')[0]
+        })) : []);
+
+    const show = (toilets) => {
+        map.eachLayer(l => { if(l instanceof L.Marker && l !== userM) map.removeLayer(l); });
+        toilets.forEach(p => {
+            const m = L.marker([p.lat, p.lng], { icon: L.divIcon({ html: wcIcon, className: '', iconSize:[34,42], iconAnchor:[17,42], popupAnchor:[0,-30] }) }).addTo(map);
+            m.on('click', () => {
+                if(routeL) { map.removeLayer(routeL); routeL = null; }
+                const apple = 'http://maps.apple.com/?daddr='+p.lat+','+p.lng+'&dirflg=w';
+                const google = 'https://www.google.com/maps/dir/?api=1&destination='+p.lat+','+p.lng+'&travelmode=walking';
+                const content = '<div class="pop"><h4>'+p.name+'</h4><div class="stats" id="sWalk">...</div><details><summary>'+i18n[curL].g+'</summary><a href="'+apple+'" class="ext-btn" style="background:#000">Apple Maps</a><a href="'+google+'" class="ext-btn" style="background:#34A853">Google Maps</a></details></div>';
+                L.popup().setLatLng([p.lat, p.lng]).setContent(content).openOn(map);
+                if(userPos) fetchOSRM(userPos, p);
+            });
+        });
+    };
+
+    const fetchOSRM = (from, to) => {
+        fetch('https://router.project-osrm.org/route/v1/walking/'+from.lng+','+from.lat+';'+to.lng+','+to.lat+'?overview=full&geometries=geojson')
+        .then(r => r.json()).then(d => {
+            if(d.code === 'Ok') {
+                routeL = L.polyline(d.routes[0].geometry.coordinates.map(c => [c[1],c[0]]), { color:'#007AFF', opacity:.8, weight:6 }).addTo(map);
+                const min = Math.round(d.routes[0].duration/60);
+                const km = d.routes[0].distance < 1000 ? Math.round(d.routes[0].distance)+' m' : (d.routes[0].distance/1000).toFixed(1)+' km';
+                const el = document.getElementById('sWalk');
+                if(el) el.innerText = min+' min \u2022 '+km;
             }
         });
     };
 
-    document.getElementById('lS').onchange = e => { curL = e.target.value; search(); };
-    document.getElementById('re').onclick = () => { if(geo) geo.getCurrentPosition((s, r) => { if(s==='complete') { map.setCenter(r.position); search(); } }); };
+    const refresh = () => {
+        map.eachLayer(l => { if(l instanceof L.Marker && l !== userM) map.removeLayer(l); });
+        if(routeL) { map.removeLayer(routeL); routeL = null; }
+        search();
+    };
 
-    const refresh = () => { map.getAllOverlays("marker").forEach(m => { if(m !== userM) map.remove(m); }); if(routeL) { map.remove(routeL); routeL = null; } search(); };
-    document.getElementById("rf").onclick = refresh;
+    document.getElementById('lS').onchange = e => { curL = e.target.value; search(); };
+    document.getElementById('re').onclick = () => { navigator.geolocation.getCurrentPosition(p => { const pos = { lat: p.coords.latitude, lng: p.coords.longitude }; userPos = pos; updateUM(pos); map.setView(pos, 16); search(); }); };
+    document.getElementById('rf').onclick = refresh;
     window.onload = initMap;
 </script>
 </body>
